@@ -1,4 +1,4 @@
-"""Correctness suite for DP-1 and DP-with-Lists. Run: python tests/run_tests.py"""
+"""Correctness suite for DP-1, DP-with-Lists and DP-with-Upper-Bounds. Run: python tests/run_tests.py"""
 import os
 import random
 import sys
@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(_ROOT, "src", "report"))
 from knapsack_test import test_solver, reference_knapsack
 from dp_array import dp_array
 from dp_lists import dp_lists
+from branch_and_bound import solve_knapsack_branch_and_bound
 from instrumented import dp_lists_stats, brute_force
 from generators import generate, TYPES, capacity_from_fraction
 
@@ -19,11 +20,17 @@ def solver(weights, profits, capacity):
     return dp_lists(weights, profits, capacity)[1]   # profit of the last (largest) state
 
 
+def bb_solver(weights, profits, capacity):
+    return solve_knapsack_branch_and_bound(weights, profits, capacity)[1]   # profit of the best state
+
+
 def check_all(w, p, c):
     """Compare all solvers with the reference DP, brute force (small n), and the instrumented copy."""
     expected = reference_knapsack(w, p, c)
     assert dp_array(w, p, c) == expected, f"DP-1 mismatch on {w},{p},{c}"
     assert solver(w, p, c) == expected, f"solver mismatch on {w},{p},{c}"
+    best_w, best_p = solve_knapsack_branch_and_bound(w, p, c)
+    assert best_p == expected and 0 <= best_w <= c, f"branch and bound mismatch on {w},{p},{c}"
     if len(w) <= 15:
         assert brute_force(w, p, c) == expected, f"reference mismatch on {w},{p},{c}"
     # instrumented copy must agree with the original and keep the sorted/non-dominated invariant
@@ -34,6 +41,7 @@ def check_all(w, p, c):
 if __name__ == "__main__":
     # 1. Textbook case, asserted (items 2 and 4: weight 3+5=8, profit 4+8=12)
     assert solver([2, 3, 4, 5], [3, 4, 5, 8], 8) == 12
+    assert bb_solver([2, 3, 4, 5], [3, 4, 5, 8], 8) == 12
     assert dp_array([2, 3, 4, 5], [3, 4, 5, 8], 8) == 12
     print("textbook case:", test_solver(solver, [2, 3, 4, 5], [3, 4, 5, 8], 8))
 
