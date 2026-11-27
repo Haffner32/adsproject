@@ -1,5 +1,12 @@
-"""Correctness suite for DP-with-Lists. Run: python run_tests.py"""
+"""Correctness suite for DP-with-Lists. Run: python tests/run_tests.py"""
+import os
 import random
+import sys
+
+# make src/algorithms and src/report importable no matter where the script is run from
+_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+sys.path.insert(0, os.path.join(_ROOT, "src", "algorithms"))
+sys.path.insert(0, os.path.join(_ROOT, "src", "report"))
 from knapsack_test import test_solver, reference_knapsack, example_solver
 from dp_lists import dp_lists
 from instrumented import dp_lists_stats, brute_force

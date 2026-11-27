@@ -6,6 +6,11 @@ import argparse, csv, gc, json, os, platform, sys
 from statistics import median
 from time import perf_counter
 
+# make src/algorithms and tests (for knapsack_test) importable no matter where the script is run from
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_HERE, "..", "algorithms"))
+sys.path.insert(0, os.path.join(_HERE, "..", "..", "tests"))
+
 from dp_lists import dp_lists
 from knapsack_test import example_solver, reference_knapsack
 from instrumented import dp_lists_stats, array_updates
