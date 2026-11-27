@@ -1,4 +1,4 @@
-"""Correctness suite for DP-with-Lists. Run: python tests/run_tests.py"""
+"""Correctness suite for DP-1 and DP-with-Lists. Run: python tests/run_tests.py"""
 import os
 import random
 import sys
@@ -7,7 +7,9 @@ import sys
 _ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 sys.path.insert(0, os.path.join(_ROOT, "src", "algorithms"))
 sys.path.insert(0, os.path.join(_ROOT, "src", "report"))
-from knapsack_test import test_solver, reference_knapsack, example_solver
+
+from knapsack_test import test_solver, reference_knapsack
+from dp_array import dp_array
 from dp_lists import dp_lists
 from instrumented import dp_lists_stats, brute_force
 from generators import generate, TYPES, capacity_from_fraction
@@ -18,8 +20,9 @@ def solver(weights, profits, capacity):
 
 
 def check_all(w, p, c):
-    """Compare solver with array DP, brute force (small n), and the instrumented copy."""
+    """Compare all solvers with the reference DP, brute force (small n), and the instrumented copy."""
     expected = reference_knapsack(w, p, c)
+    assert dp_array(w, p, c) == expected, f"DP-1 mismatch on {w},{p},{c}"
     assert solver(w, p, c) == expected, f"solver mismatch on {w},{p},{c}"
     if len(w) <= 15:
         assert brute_force(w, p, c) == expected, f"reference mismatch on {w},{p},{c}"
@@ -31,6 +34,7 @@ def check_all(w, p, c):
 if __name__ == "__main__":
     # 1. Textbook case, asserted (items 2 and 4: weight 3+5=8, profit 4+8=12)
     assert solver([2, 3, 4, 5], [3, 4, 5, 8], 8) == 12
+    assert dp_array([2, 3, 4, 5], [3, 4, 5, 8], 8) == 12
     print("textbook case:", test_solver(solver, [2, 3, 4, 5], [3, 4, 5, 8], 8))
 
     # 2. Hand-written edge cases

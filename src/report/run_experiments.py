@@ -6,13 +6,11 @@ import argparse, csv, gc, json, os, platform, sys
 from statistics import median
 from time import perf_counter
 
-# make src/algorithms and tests (for knapsack_test) importable no matter where the script is run from
-_HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(_HERE, "..", "algorithms"))
-sys.path.insert(0, os.path.join(_HERE, "..", "..", "tests"))
+# make src/algorithms importable no matter where the script is run from
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "algorithms"))
 
 from dp_lists import dp_lists
-from knapsack_test import example_solver, reference_knapsack
+from dp_array import dp_array
 from instrumented import dp_lists_stats, array_updates
 from generators import generate, capacity_from_fraction, TYPES
 
@@ -37,7 +35,7 @@ def time_once(solver, w, p, c, repeats):
 
 def run_instance(exp, kind, n, R, w, p, c, seed, repeats, rows, extra=None):
     t_lists, r1 = time_once(lists_solver, w, p, c, repeats)
-    t_array, r2 = time_once(example_solver, w, p, c, repeats)
+    t_array, r2 = time_once(dp_array, w, p, c, repeats)
     assert r1 == r2, f"solvers disagree ({exp}, {kind}, n={n}, c={c}, seed={seed})"
     _, st = dp_lists_stats(w, p, c)
     row = {
